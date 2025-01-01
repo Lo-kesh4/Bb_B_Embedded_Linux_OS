@@ -105,4 +105,54 @@ This will include/enable and exclude/disable appropriate components/sub-systems/
 
 once we copy it as a .config, we can build our kernel-image for our target system + other, binaries, like dynamic-modules ...
 
-line no 573
+check
+```
+ls -l .config
+```
+we must use the following command to check, if all the kernel-configurations are taken care - if not, there will be prompts, due to the following command 
+```
+make ARCH=arm oldconfig
+```
+#### Building Kernel-Image, Modules, DeviceTreeBlobs
+
+Following are typical, kernel-build commands, that are used to generate a type of kernel-image to be loaded, by u-boot loader
+  - older ARM kernel-image was "uImage" that was built on top of zImage - it has certain header information used, by u-boot boot-loader - older boot-loaders needed uImage set-up, so it was used - newer boot-loaders do not need it 
+  - recent u-boot loaders do not need, such special images, so we can just use the standard zImage, that is built for ARM based embedded-linux  OS systems...
+  - for our u-boot loader version, we just use "zImage" to load a kernel, into the target
+
+following command will  build the actual, kernel-image, that will be loaded, by the boot-loader, in the target-system 
+```
+make -j 8 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage
+```
+ARCH and CROSS_COMPILE variables and their settings are passed to kernel-build 
+
+  - In addition to ARCH=arm, we must pass CROSS_COMPILE=arm-linux-gnueabihf-, in order to use cross-compiler binaries, for building the kernel-image
+  - In the above command, ARCH=arm will force the kbuild to build a kernel-image for arm/32-bit architecture
+
+>Note: the above step can take from 5 minutes-15 minutes-30 mins
+
+**If the above build is successful**
+```
+ls -l KERNEL/arch/arm/boot/zImage
+```
+This step  is, for building internal, dynamic-modules
+```
+make -j 8 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules
+```
+we may have to install these built-in, dynamics-modules, into the targets rootfs, after the target-rootfs is extracted and stored, in a physical fileSystem layout of a storage device
+
+Next, we need to build dtbs - one or more of these will be used, in the target-rootfs and loaded, along with a kernel-image
+```
+sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs
+```
+  - dtbs are device-tree blobs/binaries generated from dts(source-files) scripts - dts stands for device-tree source
+```
+ls -l <ksrctree>/arch/arm/boot/dts/*.dtb
+```
+
+There are several dtbs for different "board + SoC combinations", for different targets for our board(s), there will be  specific *.dts and *.dtb files 
+
+**for our BBB board, we will be using `ksrc/arch/arm/boot/dts/am335x-boneblack.dts` actually, we will be using *.dtb, not *.dts **
+
+
+
