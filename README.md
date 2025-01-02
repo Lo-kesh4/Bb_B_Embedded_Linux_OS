@@ -1,5 +1,5 @@
 # Bb_B_Embedded_Linux_OS
-Embedded-Linux OS development set-up for "BeagleBone_Black"
+## Embedded-Linux OS development set-up for "BeagleBone_Black"
 > WARNING ---> if we blindly follow the steps provided, the set-up will not work - we need to have a deep understanding and adapt it.
 #### Pre-Installation steps
 ```
@@ -152,7 +152,40 @@ ls -l <ksrctree>/arch/arm/boot/dts/*.dtb
 
 There are several dtbs for different "board + SoC combinations", for different targets for our board(s), there will be  specific *.dts and *.dtb files 
 
-**for our BBB board, we will be using `ksrc/arch/arm/boot/dts/am335x-boneblack.dts` actually, we will be using *.dtb, not *.dts **
+> for our BBB board, we will be using `ksrc/arch/arm/boot/dts/am335x-boneblack.dts` actually, we will be using *.dtb, not *.dts 
+
+## Building Bootable SD Card
+
+further installation of kernel-image/binaries/internal dynamic-modules for our target-board - in this case, it will be a BeagleBone-White(BBW),or BB-B(black version) 
+  - we will be using sd-card to store all the above images and the target will use the images on the sd-card to bootstrap the target's Embedded-Linux OS - in this case, the target will be using an embedded-debian OS
+
+***CONNECT YOUR SD-CARD (~32gb) TO THE HOST SYSTEM these are peculiar commands, so run them, as per your system's set-up and other locations - you may have to change the following commands, as required WARNING : if you make mistakes, your host system's Linux will be deleted/overwritten/wiped-out  - even the boot-loaders will be overwritten - BE CAREFUL !!!***
+```
+lsblk
+```
+will provide disk information and partitions
+
+**Identify your SD-CARD device-NAME/PARTITIONS**
+  - **THIS SETP must be done carefully, since we wil be overwriting the contents of a storage-device**
+```
+export DISK=/dev/sd?   # fill appropriate value
+```
+```
+echo $DISK
+```
+check the status
+```
+df -h
+```
+  - find any partitions belonging to our sd-card
+```
+umount /dev/sd?1   //path of a partition of sd-card
+```
+  - if there are multiple partitions on our sd-card, we need to unmount as many times
+  - we wish to completely erase and setup a new set of file-systems and layouts on this sd-card
+
+***VERY DANGEROUS COMMAND - following command should be executed at 
+    your own risk ?? DISCLAIMER ??***
 
 
 
