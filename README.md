@@ -184,8 +184,36 @@ umount /dev/sd?1   //path of a partition of sd-card
   - if there are multiple partitions on our sd-card, we need to unmount as many times
   - we wish to completely erase and setup a new set of file-systems and layouts on this sd-card
 
+```
+unzip initial_target_images_20.12.2022.zip
+```
+above zip file is present in the special packages you have downloaded
+  - we will be using MLO file and u-boot.img files in next steps
+
 ***VERY DANGEROUS COMMAND - following command should be executed at 
     your own risk ?? DISCLAIMER ??***
 
+```
+echo $DISK
+dd if=<pathofMLO> of=${DISK} count=1 seek=1 bs=128k
+```
+This command does a raw copy of image of secondary boot-loader into a location of a disk-storage - copied, outside file-system layout
+```
+dd if=<pathof u-boot.img> of=${DISK} count=2 seek=1 bs=384k
+```
+This u-boot.img-loader will be used, by the second-stage boot-loader, which is the above one - these are standard, in many of the chipsets this third-stage boot-loader actually, loads our kernel-image and related binaries, including dtb/device-tree - this plays the role of grub.
 
+### Setting-up a LINUX PARTITION on SD-CARD
+
+Let us partition and use the sd-card - we are setting-up a Linux partition on sd-card to create a Linux file-system layout 
+
+**WARNING: DANGEROUS - following commands should be executed at your own risk ?? DISCLAIMER ??**
+
+```
+echo $DISK
+sudo sfdisk ${DISK} <<-__EOF__
+>4M,,L,*
+>__EOF__
+```
+If the above commands are successful, a new partition will be set-up , so that we can create a new rootfs-layout
 
